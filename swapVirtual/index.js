@@ -1,6 +1,3 @@
-const dotenv = require('dotenv')
-dotenv.config()
-
 const Web3 = require('web3')
 const web3 = new Web3('https://base-mainnet.infura.io/v3/200a54a78d294101bbd166a319063408')
 const web3Socket = new Web3('wss://base-mainnet.infura.io/ws/v3/200a54a78d294101bbd166a319063408')
@@ -28,12 +25,14 @@ const keyAir1 = {
 }
 
 const tokenIn = '0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b'
+const tokenOutTest = '0x8adcec50A0595cB91ba5989d9a0844148c234539'
 
 const getTokenAddress = data => {
   const adad = web3.eth.abi.decodeParameters(['uint256', 'address', 'address', 'address', 'address', 'address'], data)
   return adad[1]
 }
-const amountSwap = 100000000000000000000n
+const amountSwap = 10000000000000000000n
+const mainAccount = '0xB31E3bbb334882f13C3e57e21a4B5653C50748E2'
 
 const contract = new web3.eth.Contract(abiUni, contractUni)
 const account = web3.eth.accounts.privateKeyToAccount(keyAir1.privateKey)
@@ -47,7 +46,7 @@ const swap = async (nonce, gasPrice, tokenOut) => {
     const rawTransaction = {
       to: contract._address,
       data: contract.methods
-        .swapExactTokensForTokensSupportingFeeOnTransferTokens(amountSwap, 0, [tokenIn, tokenOut], keyAir1.address, 17300092450)
+        .swapExactTokensForTokensSupportingFeeOnTransferTokens(amountSwap, 0, [tokenIn, tokenOut], mainAccount, 17300092450)
         .encodeABI(),
       gasPrice: gasPrice,
       nonce: nonce,
@@ -59,6 +58,7 @@ const swap = async (nonce, gasPrice, tokenOut) => {
     console.log('🚀 ~ swap ~ receipt:', receipt)
     logTele(`swap Okla ${receipt.transactionHash}`)
   } catch (err) {
+    console.log('🚀 ~ swap ~ err:', err)
     logTele(`swap tach rau`)
   }
   return nonce + 1
@@ -102,3 +102,5 @@ const socket = async () => {
 }
 
 socket()
+
+// swap(8, 32338842, '0x1cDb329275A03dc678afe8B6F30fFfC429Ef6FD1')
